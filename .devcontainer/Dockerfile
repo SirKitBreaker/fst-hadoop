@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 USER root
 
@@ -15,10 +15,10 @@ RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 # java & vim
 RUN apt-get update \
-    && apt-get -y install openjdk-8-jdk \
+    && apt-get -y install openjdk-21-jdk \
     && apt-get -y install vim 
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # hadoop
@@ -26,8 +26,8 @@ RUN curl -s https://dlcdn.apache.org/hadoop/common/hadoop-3.4.2/hadoop-3.4.2.tar
 RUN cd /usr/local && ln -s ./hadoop-3.4.2 hadoop
 
 ENV HADOOP_HOME /usr/local/hadoop
-# RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64\nexport HADOOP_HOME=/usr/local/hadoop\nexport HADOOP_HOME=/usr/local/hadoop\n:' $HADOOP_HOME/etc/hadoop/hadoop-env.sh
-RUN echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
+# RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64\nexport HADOOP_HOME=/usr/local/hadoop\nexport HADOOP_HOME=/usr/local/hadoop\n:' $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 RUN echo "export HADOOP_HOME=/usr/local/hadoop" >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 RUN echo "export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop" >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 RUN cat ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
@@ -56,8 +56,8 @@ RUN chmod 600 /root/.ssh/config
 RUN chown root:root /root/.ssh/config
 
 # # installing supervisord
-# RUN yum install -y python-setuptools
-# RUN easy_install pip
+# RUN apt-get install -y python-setuptools
+# RUN python -m pip
 # RUN curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -o - | python
 # RUN pip install supervisor
 #
@@ -77,24 +77,24 @@ ENV HDFS_DATANODE_USER root
 ENV HDFS_SECONDARYNAMENODE_USER root
 ENV YARN_RESOURCEMANAGER_USER root
 ENV YARN_NODEMANAGER_USER root
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 
-RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/root
-RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -put $HADOOP_HOME/etc/hadoop/ input
+RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/root
+RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -put $HADOOP_HOME/etc/hadoop/ input
 
 #Add hadoop to path
 ENV PATH /usr/local/hadoop/bin:$PATH
 
 # pig
 RUN curl -s https://downloads.apache.org/pig/latest/pig-0.18.0.tar.gz | tar -xz -C /usr/local
-ENV PIG_HOME /usr/local/pig-0.17.0/
+ENV PIG_HOME /usr/local/pig-0.18.0/
 RUN ln -s $PIG_HOME /usr/local/pig
 ENV PATH $PATH:$PIG_HOME/bin
 
 # hive
 RUN curl -s https://dlcdn.apache.org/hive/hive-4.2.0/apache-hive-4.2.0-bin.tar.gz  | tar -xz -C /usr/local
-ENV HIVE_HOME /usr/local/apache-hive-3.1.2-bin
+ENV HIVE_HOME /usr/local/apache-hive-4.2.0-bin
 RUN ln -s $HIVE_HOME /usr/local/hive
 ENV PATH $PATH:$HIVE_HOME/bin
 
@@ -116,8 +116,8 @@ RUN service ssh start \
     nohup $HADOOP_HOME/sbin/stop-yarn.sh &>/dev/null &
 
 #mr job
-RUN apt-get install -y python-pip \
-    && pip install mrjob
+RUN apt-get install python3 python3-pip -y \
+    && pip3 install mrjob
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh

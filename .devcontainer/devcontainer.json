@@ -1,5 +1,5 @@
 {
-    "image": "sirkitbreaker/template-fst-hadoop",
+    "image": "docker.io/sirkitbreaker/base-hadoop:latest",
     "features": {
         "ghcr.io/devcontainers/features/common-utils:1": {
             "installZsh": "true",
@@ -13,7 +13,7 @@
     // "forwardPorts": [],
 
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "docker build -t sirkitbreaker/template-fst-hadoop && docker container run sirkitbreaker/template-fst-hadoop",
+    "postCreateCommand": "$HADOOP_HOME/sbin/start-dfs.sh && $HADOOP_HOME/sbin/start-yarn.sh && mapred historyserver",
 
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "vscode"
