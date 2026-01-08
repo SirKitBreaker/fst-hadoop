@@ -94,7 +94,7 @@ ENV PATH $PATH:$PIG_HOME/bin
 
 # hive
 RUN curl -s https://dlcdn.apache.org/hive/hive-4.2.0/apache-hive-4.2.0-bin.tar.gz  | tar -xz -C /usr/local
-ENV HIVE_HOME /usr/local/apache-hive-3.1.2-bin/
+ENV HIVE_HOME /usr/local/apache-hive-3.1.2-bin
 RUN ln -s $HIVE_HOME /usr/local/hive
 ENV PATH $PATH:$HIVE_HOME/bin
 
