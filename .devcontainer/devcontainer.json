@@ -13,7 +13,7 @@
     "forwardPorts": [9870, 8088],
 
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "sudo $HADOOP_HOME/sbin/start-dfs.sh && sudo $HADOOP_HOME/sbin/start-yarn.sh && sudo sbin/mr-jobhistory-daemon.sh start historyserver",
+    "postCreateCommand": "sudo $HADOOP_HOME/sbin/start-dfs.sh && sudo $HADOOP_HOME/sbin/start-yarn.sh && sudo $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver",
 
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "vscode"
