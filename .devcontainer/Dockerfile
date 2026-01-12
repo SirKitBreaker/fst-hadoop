@@ -83,7 +83,7 @@ ENV PATH $JAVA_HOME/bin:$PATH
 RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/root
 RUN service ssh start && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/etc/hadoop/hadoop-env.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/sbin/start-dfs.sh && JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 $HADOOP_HOME/bin/hdfs dfs -put $HADOOP_HOME/etc/hadoop/ input
 
-#Add hadoop to path
+# Add hadoop to path
 ENV PATH /usr/local/hadoop/bin:$PATH
 
 # pig
@@ -97,8 +97,18 @@ RUN curl -s https://dlcdn.apache.org/hive/hive-4.2.0/apache-hive-4.2.0-bin.tar.g
 ENV HIVE_HOME /usr/local/apache-hive-4.2.0-bin
 RUN ln -s $HIVE_HOME /usr/local/hive
 ENV PATH $PATH:$HIVE_HOME/bin
-
+ADD hive-site.xml $HIVE_HOME/conf
+# metastore db
 RUN $HIVE_HOME/bin/schematool -dbType derby -initSchema
+
+# protobuf
+RUN apt-get install -y protobuf-compiler
+
+# tez
+RUN curl -s https://dlcdn.apache.org/tez/0.10.5/apache-tez-0.10.5-bin.tar.gz  | tar -xz -C /usr/local
+ENV TEZ_HOME /usr/local/apache-tez-0.10.5-bin
+ENV TEZ_JARS=$TEZ_HOME
+ADD tez-site.xml $TEZ_HOME/conf
 
 RUN apt-get install -y netcat
 
@@ -112,6 +122,10 @@ RUN service ssh start \
     && $HADOOP_HOME/bin/hdfs dfs -mkdir /tmp \
     && $HADOOP_HOME/bin/hdfs dfs -chmod g+w /user/hive/warehouse \
     && $HADOOP_HOME/bin/hdfs dfs -chmod g+w /tmp \
+    && $HADOOP_HOME/bin/hdfs dfs -mkdir /apps/tez \
+    && $HADOOP_HOME/bin/hdfs dfs -chmod -R 755 /apps/tez \
+    && $HADOOP_HOME/bin/hdfs dfs -put $TEZ_HOME/* /apps/tez/ \
+    && $HADOOP_HOME/bin/hdfs dfs -put $HIVE_HOME/lib/hive-exec-4.2.0.jar /apps/tez/ \
     && nohup $HADOOP_HOME/sbin/stop-dfs.sh &>/dev/null & \
     nohup $HADOOP_HOME/sbin/stop-yarn.sh &>/dev/null &
 

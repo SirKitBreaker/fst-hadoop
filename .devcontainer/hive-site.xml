@@ -1,0 +1,31 @@
+<configuration>
+    <property>
+        <name>hive.tez.container.size</name>
+        <value>1024</value>
+    </property>
+
+    <property>
+        <name>hive.metastore.warehouse.external.dir</name>
+        <value>/user/hive/warehouse</value>
+    </property>
+
+    <property>
+        <name>hive.execution.engine</name>
+        <value>tez</value>
+    </property>
+
+    <property>
+        <name>tez.lib.uris</name>
+        <value>hdfs://localhost:9000/apps/tez/apache-tez-0.10.5-bin.tar.gz,hdfs://localhost:9000/apps/tez/apache-tez-0.10.5-bin/lib,hdfs://localhost:9000/apps/tez/apache-tez-0.10.5-bin</value>
+    </property>
+
+    <property>
+        <name>tez.configuration</name>
+        <value>/usr/local/apache-tez-0.10.5-bin/conf/tez-site.xml</value>
+    </property>
+
+    <property>
+        <name>tez.use.cluster.hadoop-libs</name>
+        <value>true</value>
+    </property>
+</configuration>
